@@ -16,8 +16,8 @@ import cv2
 
 import torch
 from torch.autograd import Variable
-
 # mrcn imports
+
 import _init_paths
 from datasets.factory import get_imdb
 from model.config import cfg, cfg_from_file, cfg_from_list
@@ -27,6 +27,7 @@ from nets.resnet_v1 import resnetv1
 from utils.blob import im_list_to_blob
 from utils.mask_utils import recover_masks
 from pycocotools import mask as COCOmask
+
 
 # mrcn dir
 this_dir = osp.dirname(__file__)
@@ -155,6 +156,7 @@ class Inference:
         rles = []
         for m in masks:
             rle = COCOmask.encode(np.asfortranarray(m))
+            rle['counts'] = rle['counts'].decode('ascii')
             rles += [rle]
 
         return masks, rles

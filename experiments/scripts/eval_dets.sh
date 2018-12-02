@@ -1,5 +1,3 @@
-
-
 GPU_ID=$1
 DATASET=$2
 SPLITBY=$3
@@ -10,36 +8,37 @@ SPLITBY=$3
 # NET="res101"
 ID="mrcn_cmr_with_st"
 # ID="mrcn_dets_cmr_with_st"
-
+declare -a lst=("val" "testA" "testB")
+declare -a lst2=("val")
 case ${DATASET} in
     refcoco)
-        for SPLIT in val testA testB
-        do
-            CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/eval_dets.py \
-                --dataset ${DATASET} \
-                --splitBy ${SPLITBY} \
-                --split ${SPLIT} \
-                --id ${ID}
-        done
+	for SPLIT in "${lst[@]}"
+	do
+	    CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/eval_dets.py \
+		--dataset ${DATASET} \
+		--splitBy ${SPLITBY} \
+		--split ${SPLIT} \
+		--id ${ID}
+	done
     ;;
     refcoco+)
-        for SPLIT in val testA testB
-        do
-            CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/eval_dets.py \
-                --dataset ${DATASET} \
-                --splitBy ${SPLITBY} \
-                --split ${SPLIT} \
-                --id ${ID}
-        done
+	for SPLIT in val testA testB
+	do
+	    CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/eval_dets.py \
+		--dataset ${DATASET} \
+		--splitBy ${SPLITBY} \
+		--split ${SPLIT} \
+		--id ${ID}
+	done
     ;;
     refcocog)
-        for SPLIT in val test
-        do
-            CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/eval_dets.py \
-                --dataset ${DATASET} \
-                --splitBy ${SPLITBY} \
-                --split ${SPLIT} \
-                --id ${ID}
-        done
+	for SPLIT in val test
+	do
+	    CUDA_VISIBLE_DEVICES=${GPU_ID} python ./tools/eval_dets.py \
+		--dataset ${DATASET} \
+		--splitBy ${SPLITBY} \
+		--split ${SPLIT} \
+		--id ${ID}
+	done
     ;;
 esac

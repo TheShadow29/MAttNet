@@ -1,5 +1,5 @@
 """
-data_json has 
+data_json has
 0. refs        : list of {ref_id, ann_id, box, image_id, split, category_id, sent_ids}
 1. images      : list of {image_id, ref_ids, ann_ids, file_name, width, height, h5_id}
 2. anns        : list of {ann_id, category_id, image_id, box, h5_id}
@@ -20,6 +20,7 @@ import numpy as np
 import h5py
 import json
 import random
+
 
 class Loader(object):
 
@@ -49,14 +50,16 @@ class Loader(object):
         self.Anns = {ann['ann_id']: ann for ann in self.anns}
         self.Sentences = {sent['sent_id']: sent for sent in self.sentences}
         self.annToRef = {ref['ann_id']: ref for ref in self.refs}
-        self.sentToRef = {sent_id: ref for ref in self.refs for sent_id in ref['sent_ids']}
+        self.sentToRef = {
+            sent_id: ref for ref in self.refs for sent_id in ref['sent_ids']}
 
         # read data_h5 if exists
         self.data_h5 = None
         if data_h5 is not None:
             print('Loader loading data.h5: ', data_h5)
             self.data_h5 = h5py.File(data_h5, 'r')
-            assert self.data_h5['labels'].shape[0] == len(self.sentences), 'label.shape[0] not match sentences'
+            assert self.data_h5['labels'].shape[0] == len(
+                self.sentences), 'label.shape[0] not match sentences'
             assert self.data_h5['labels'].shape[1] == self.label_length, 'label.shape[1] not match label_length'
 
     @property
@@ -77,8 +80,8 @@ class Loader(object):
         for i, sent_str in enumerate(sent_str_list):
             tokens = sent_str.split()
             for j, w in enumerate(tokens):
-              if j < self.label_length:
-                  L[i, j] = self.word_to_ix[w] if w in self.word_to_ix else self.word_to_ix['<UNK>']
+                if j < self.label_length:
+                    L[i, j] = self.word_to_ix[w] if w in self.word_to_ix else self.word_to_ix['<UNK>']
         return L
 
     def decode_labels(self, labels):
@@ -90,7 +93,8 @@ class Loader(object):
         num_sents = labels.shape[0]
         for i in range(num_sents):
             label = labels[i].tolist()
-            sent_str = ' '.join([self.ix_to_word[int(i)] for i in label if i != 0])
+            sent_str = ' '.join([self.ix_to_word[int(i)]
+                                 for i in label if i != 0])
             decoded_sent_strs.append(sent_str)
         return decoded_sent_strs
 
@@ -99,10 +103,12 @@ class Loader(object):
         return: int32 (num_sents, label_length) and picked_sent_ids
         """
         ref = self.Refs[ref_id]
-        sent_ids = list(ref['sent_ids'])  # copy in case the raw list is changed
+        # copy in case the raw list is changed
+        sent_ids = list(ref['sent_ids'])
         seq = []
         if len(sent_ids) < num_sents:
-            append_sent_ids = [random.choice(sent_ids) for _ in range(num_sents - len(sent_ids))]
+            append_sent_ids = [random.choice(sent_ids)
+                               for _ in range(num_sents - len(sent_ids))]
             sent_ids += append_sent_ids
         else:
             sent_ids = sent_ids[:num_sents]
